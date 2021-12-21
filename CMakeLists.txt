@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(Lattice_RingCT_v2_0)
+project(RINGCT)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -25,10 +25,6 @@ set(CMAKE_CXX_STANDARD 14)
 #        )
 
 add_executable(Lattice_RingCT_v2_0_classical
-        Ring2.0/aes.c
-        Ring2.0/aes.h
-        Ring2.0/aes_c.c
-        Ring2.0/aes_local.h
         Ring2.0/api.h
         Ring2.0/common.c
         Ring2.0/common.h
@@ -36,14 +32,12 @@ add_executable(Lattice_RingCT_v2_0_classical
         Ring2.0/fips202.h
         Ring2.0/ntt.c
         Ring2.0/ntt.h
-        Ring2.0/oqs.h
         Ring2.0/params.h
         Ring2.0/poly.c
         Ring2.0/poly.h
         Ring2.0/precomp.c
         Ring2.0/rand.c
         Ring2.0/rand.h
-        Ring2.0/rand_nist.c
         Ring2.0/reduce.c
         Ring2.0/reduce.h
         Ring2.0/ring.c
@@ -56,6 +50,5 @@ add_executable(Lattice_RingCT_v2_0_classical
         Ring2.0/sha3.c
         Ring2.0/sha3.h
 #        Ring2.0/stdafx.cpp
-        Ring2.0/targetver.h
         Ring2.0/verify.c
         Ring2.0/verify.h)

@@ -8,8 +8,8 @@
 * \remarks For usage examples, see sha3_test.h
 */
 
-#ifndef OQS_SHA3_H
-#define OQS_SHA3_H
+#ifndef RINGCT_SHA3_H
+#define RINGCT_SHA3_H
 
 #include <stddef.h>
 #include <stdint.h>

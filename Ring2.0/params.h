@@ -1,5 +1,5 @@
-#ifndef PARAMS_H
-#define PARAMS_H
+#ifndef RINGCT_PARAMS_H
+#define RINGCT_PARAMS_H
 
 #define NEWHOPE_Q 12289
 #define NEWHOPE_2Q 24578

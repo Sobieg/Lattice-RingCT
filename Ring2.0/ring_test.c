@@ -133,7 +133,6 @@ void MIMO_LRCT_Setup_Test()
 	}
 
 }
-///÷˝±“£¨ª®±“
 void LRCT_Spent_Test()
 {
 	poly A[MSIZE], H[MSIZE];
@@ -295,7 +294,6 @@ void LRCT_Com_Test()
 	printf("cn:\n");
 	poly_print(&(iw.cn));
 }
-//ntt ±‰ªª≤‚ ‘
 void LRCT_Fun_Test()
 {
 	uint8_t seed[NEWHOPE_SYMBYTES] = { 0 };
@@ -316,7 +314,6 @@ void LRCT_Fun_Test()
 	poly_print(&a);
 
 }
-//“∆Œª≤‚ ‘
 void LRCT_Shift_Test()
 {
 	poly r, a;

@@ -230,7 +230,7 @@ int LRCT_SigVer(const poly *c1, poly **t, poly *A, poly *H, size_t mLen, poly *h
 		SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);//H2q*U
 		SHA256_Final(bHash, &ctx);//C_(pai+1)
 		printf("bHash======================%d:\n", i);
-		BytePrint(bHash, 32);
+        print_bytes(bHash, 32);
 		SHA256_KDF(bHash, 32, NEWHOPE_POLYBYTES, bpoly);
 		poly_frombytes(&c, bpoly);
 		poly_serial(&c);
@@ -360,7 +360,7 @@ void MIMO_LRCT_SigGen(poly *c1, poly *tList, poly *hList, poly *SList, int NLen,
 	int k = 0;
 	int j = 0;
 	int index = 0;
-	//³õÊ¼»¯¶¯Ì¬±äÁ¿
+	//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½
 	for (i = 0; i < (mLen + 1); i++)
 	{
 		poly_init(A2qp + i);
@@ -493,7 +493,7 @@ void MIMO_LRCT_SigGen(poly *c1, poly *tList, poly *hList, poly *SList, int NLen,
 		}
 	}
 	/////
-	//³õÊ¼»¯¶¯Ì¬±äÁ¿
+	//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½
 		free(A2qp);
 		free(S2q);
 		free(tmp2q);

@@ -1,5 +1,5 @@
-#ifndef RING_TEST_H
-#define RING_TEST_H
+#ifndef RINGCT_RING_TEST_H
+#define RINGCT_RING_TEST_H
 
 #include "ring.h"
 

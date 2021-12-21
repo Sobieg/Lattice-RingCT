@@ -1,5 +1,5 @@
-#ifndef REDUCE_H
-#define REDUCE_H
+#ifndef RINGCT_REDUCE_H
+#define RINGCT_REDUCE_H
 
 #include <stdint.h>
 

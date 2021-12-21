@@ -169,7 +169,6 @@ void SHA256_KDF(unsigned char  *Z, unsigned short zlen, unsigned short klen, uns
 	unsigned char Ha[SHA256_len / 8];
 	unsigned char ct[4] = { 0,0,0,1 };
 	bitklen = klen * 8;
-	//设置输出块数/
 	if (bitklen%SHA256_len)
 		t = bitklen / SHA256_len + 1;
 	else
@@ -200,7 +199,6 @@ void SHA256_KDF(unsigned char  *Z, unsigned short zlen, unsigned short klen, uns
 		}
 		else ct[3]++;
 	}
-	//s3: klen/v 非整数的处理
 	SHA256_Init(&md);
 	SHA256_Update(&md, Z, zlen);
 	SHA256_Update(&md, ct, 4);

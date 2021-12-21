@@ -1,7 +1,8 @@
-#ifndef POLY_H
-#define POLY_H
+#ifndef RINGCT_POLY_H
+#define RINGCT_POLY_H
 
 #include <stdint.h>
+#include <stddef.h>
 #include "params.h"
 
 /* 
