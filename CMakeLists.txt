@@ -6,23 +6,23 @@ set(CMAKE_CXX_STANDARD 14)
 #include_directories(optimized)
 #include_directories(Ring2.0)
 
-add_executable(Lattice_RingCT_v2_0_optimized
-        optimized/api.h
-        optimized/cpapke.c
-        optimized/cpapke.h
-        optimized/fips202.h
-        optimized/kem.c
-        optimized/ntt.c
-        optimized/ntt.h
-        optimized/params.h
-        optimized/poly.c
-        optimized/poly.h
-        optimized/precomp.c
-        optimized/reduce.c
-        optimized/reduce.h
-        optimized/verify.c
-        optimized/verify.h
-        )
+#add_executable(Lattice_RingCT_v2_0_optimized
+#        optimized/api.h
+#        optimized/cpapke.c
+#        optimized/cpapke.h
+#        optimized/fips202.h
+#        optimized/kem.c
+#        optimized/ntt.c
+#        optimized/ntt.h
+#        optimized/params.h
+#        optimized/poly.c
+#        optimized/poly.h
+#        optimized/precomp.c
+#        optimized/reduce.c
+#        optimized/reduce.h
+#        optimized/verify.c
+#        optimized/verify.h
+#        )
 
 add_executable(Lattice_RingCT_v2_0_classical
         Ring2.0/aes.c
