@@ -1,5 +1,4 @@
 # Lattice-RingCT-v2.0
-[![ISC License](http://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
 
 The Lattice-based Ring Confidential Transactions “**Lattice RingCT v2.0**”, supporting Multiple-Input and Multiple-Output wallets (MIMO) transactions, as a fully functional un-derlying scheme for cryptocurrency applications.It shows how the functionality and security requirements are achieved by employing various tools and techniques from lattice-based cryptography.
 
