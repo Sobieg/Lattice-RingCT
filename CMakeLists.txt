@@ -49,6 +49,5 @@ add_executable(Lattice_RingCT_v2_0_classical
         Ring2.0/sha256.h
         Ring2.0/sha3.c
         Ring2.0/sha3.h
-#        Ring2.0/stdafx.cpp
         Ring2.0/verify.c
         Ring2.0/verify.h)

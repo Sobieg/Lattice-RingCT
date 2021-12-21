@@ -11,7 +11,7 @@ void LRCT_SampleKey(poly *r, size_t mLen)
 	size_t i;
 	for ( i = 0; i < mLen; i++)
 	{
-		OQS_randombytes(seed, NEWHOPE_SYMBYTES);
+		randombytes(seed, NEWHOPE_SYMBYTES);
 		for (size_t j = 0; j < NEWHOPE_SYMBYTES; j++)
 		{
 
@@ -24,7 +24,7 @@ void LRCT_SampleKey(poly *r, size_t mLen)
 			r[i].coeffs[j * 8 + 6] = (seed[j] & 0x40)>>6;
 			r[i].coeffs[j * 8 + 7] = (seed[j] & 0x80)>>7;
 		}
-		OQS_randombytes(seed, NEWHOPE_SYMBYTES);
+		randombytes(seed, NEWHOPE_SYMBYTES);
 		for (size_t j = 0; j < NEWHOPE_SYMBYTES; j++)
 		{
 
@@ -49,10 +49,10 @@ void LRCT_Setup(poly *A, poly *H, size_t mLen)
 
 	for ( i = 0; i < mLen; i++)
 	{
-		OQS_randombytes(seed, NEWHOPE_SYMBYTES);
+		randombytes(seed, NEWHOPE_SYMBYTES);
 		poly_uniform(A + i, seed);
 		poly_serial(A + i);
-		OQS_randombytes(seed, NEWHOPE_SYMBYTES);
+		randombytes(seed, NEWHOPE_SYMBYTES);
 		poly_uniform(H + i, seed);
 		poly_serial(H + i);
 	}
@@ -142,7 +142,7 @@ void LRCT_SigGen(poly *c1, poly **t, poly *h, poly *A, poly *H, poly *S, poly *u
 		
 		for ( k = 0; k < mLen+1; k++)
 		{
-			OQS_randombytes(bt, NEWHOPE_POLYBYTES);
+			randombytes(bt, NEWHOPE_POLYBYTES);
 			poly_frombytes(t[j] + k, bt);
 			poly_serial(t[j] + k);
 		}
@@ -167,7 +167,7 @@ void LRCT_SigGen(poly *c1, poly **t, poly *h, poly *A, poly *H, poly *S, poly *u
 		}
 
 	}
-	OQS_randombytes(&coin, 1);
+	randombytes(&coin, 1);
 	LRCT_PolyMultMatrix(tmp2q, &cpai, S2q, mLen + 1);//S2qpai *c_pai
 	if (coin&0x01)//b =1
 	{
@@ -288,10 +288,10 @@ void MIMO_LRCT_Setup(poly *A, poly *H, size_t mLen)
 
 	for (i = 0; i < mLen; i++)
 	{
-		OQS_randombytes(seed, NEWHOPE_SYMBYTES);
+		randombytes(seed, NEWHOPE_SYMBYTES);
 		poly_uniform(A + i, seed);
 		poly_serial(A + i);
-		OQS_randombytes(seed, NEWHOPE_SYMBYTES);
+		randombytes(seed, NEWHOPE_SYMBYTES);
 		poly_uniform(H + i, seed);
 		poly_serial(H + i);
 	}
@@ -398,7 +398,7 @@ void MIMO_LRCT_SigGen(poly *c1, poly *tList, poly *hList, poly *SList, int NLen,
 	{
 		for (k = 0; k < mLen + 1; k++)
 		{
-			OQS_randombytes(bt, NEWHOPE_POLYBYTES);
+			randombytes(bt, NEWHOPE_POLYBYTES);
 			poly_frombytes(u + i * (mLen + 1) + k, bt);
 			poly_serial(u + i * (mLen + 1) + k);
 		}
@@ -452,7 +452,7 @@ void MIMO_LRCT_SigGen(poly *c1, poly *tList, poly *hList, poly *SList, int NLen,
 		   LRCT_Lift(tmp2q, A, LList + j * wLen + index, mLen);
 			for (k = 0; k < mLen + 1; k++)
 			{
-				OQS_randombytes(bt, NEWHOPE_POLYBYTES);
+				randombytes(bt, NEWHOPE_POLYBYTES);
 				poly_frombytes(tList + j * wLen*(mLen + 1) + index * (mLen + 1) + k, bt);
 				poly_serial(tList + j * wLen*(mLen + 1) + index * (mLen+1)+ k);
 			}
@@ -482,7 +482,7 @@ void MIMO_LRCT_SigGen(poly *c1, poly *tList, poly *hList, poly *SList, int NLen,
 		poly_copy(S2q, SList+i*mLen, mLen);
 		poly_setValue(S2q + mLen, 1);//S_{2q}
 		//////
-		OQS_randombytes(&coin, 1);
+		randombytes(&coin, 1);
 		LRCT_PolyMultMatrix(tmp2q, &cpai, S2q, mLen + 1);//S2qpai *c_pai
 		if (coin & 0x01)//b =1
 		{

@@ -1,5 +1,5 @@
 #ifndef RINGCT_COMMON_H
-#define RINGCT_COMMON
+#define RINGCT_COMMON_H
 
 #include <stdint.h>
 #include <stdlib.h>

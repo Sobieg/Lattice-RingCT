@@ -11,15 +11,15 @@ void LRCT_Byte_Test()
 	poly a, ra;
 	uint8_t seed[NEWHOPE_SYMBYTES] = { 0 };
 	unsigned char bCof[NEWHOPE_POLYBYTES] = { 0 };
-	OQS_randombytes(seed, NEWHOPE_SYMBYTES);
+	randombytes(seed, NEWHOPE_SYMBYTES);
 	poly_uniform(&a, seed);
-	printf("begin:\n");
+	//printf("begin:\n");
 	poly_print(&a);
-	printf("serial:\n");
+	//printf("serial:\n");
 	poly_serial(&a);
 	poly_print(&a);
 	poly_tobytes(bCof, &a);
-	printf("ra:\n");
+	//printf("ra:\n");
 	poly_frombytes(&ra, bCof);
 	poly_print(&ra);
 
@@ -65,24 +65,24 @@ void LRCT_Setup_Test()
 
 	for (k = 0; k < 3; k++)
 	{
-		OQS_randombytes(bt, NEWHOPE_POLYBYTES);
+		randombytes(bt, NEWHOPE_POLYBYTES);
 		poly_frombytes(u + k, bt);
 		poly_serial(u + k);
 		///poly_print(u+k);
 	}
-	printf("====================================\n");
+	//printf("====================================\n");
 	LRCT_SigGen(&c1, t, &h, A, H,S, u, mLen, L, w,pai, msg, msgLen);
-	printf("c1\n");
+	//printf("c1\n");
 	poly_print(&c1);
-	printf("=================\n");
+	//printf("=================\n");
    result = LRCT_SigVer(&c1, t, A, H, mLen, &h, L,w, msg, msgLen);
    if (result ==1)
    {
-	   printf("Successful!\n");
+	   //printf("Successful!\n");
    }
    else
    {
-	   printf("fail\n");
+	   //printf("fail\n");
    }
    free(t[0]);
    free(t[1]);
@@ -125,11 +125,11 @@ void MIMO_LRCT_Setup_Test()
 	result = MIMO_LRCT_SigVer(&c1, tList, hList, NSIZE, A, H, MSIZE, LList, WSIZE, msg, msgLen);
 	if (result == 1)
 	{
-		printf("Successful!\n");
+		//printf("Successful!\n");
 	}
 	else
 	{
-		printf("fail\n");
+		//printf("fail\n");
 	}
 
 }
@@ -201,11 +201,11 @@ void LRCT_Spent_Test()
 	result = LRCT_Verify(&c1, t, &h, A, H, MSIZE, bSignMessage, msgSignlen, L, WSIZE);
 	if (result == 1)
 	{
-		printf("Successful!\n");
+		//printf("Successful!\n");
 	}
 	else
 	{
-		printf("fail\n");
+		//printf("fail\n");
 	}
 	for (i = 0; i < WSIZE; i++)
 	{
@@ -265,7 +265,7 @@ void LRCT_Lift_Test()
 	{
 		if (poly_equal(LA + i, H2 + i) != 1)
 		{
-			printf("Lift error_%d!\n", i);
+			//printf("Lift error_%d!\n", i);
 		}
 	}
 }
@@ -286,31 +286,31 @@ void LRCT_Com_Test()
 	LRCT_Setup(A, H, mLen);
 	LRCT_SampleKey(sk, mLen);
 	LRCT_KeyGen(&a, A, sk, mLen);
-	printf("public key:");
+	//printf("public key:");
 	poly_print(&a);
 	LRCT_Mint(&iw, ck, &a, A, mLen, bMessage, msglen);
-	printf("a:\n");
+	//printf("a:\n");
 	poly_print(&(iw.a));
-	printf("cn:\n");
+	//printf("cn:\n");
 	poly_print(&(iw.cn));
 }
 void LRCT_Fun_Test()
 {
 	uint8_t seed[NEWHOPE_SYMBYTES] = { 0 };
 	poly a;
-	OQS_randombytes(seed, NEWHOPE_SYMBYTES);
+	randombytes(seed, NEWHOPE_SYMBYTES);
 	poly_uniform(&a, seed);
 	poly_serial(&a);
 	////////////
-	printf("begin:\n");
+	//printf("begin:\n");
 	poly_print(&a);
 	//////
 	poly_ntt(&a);
-	printf("after:\n");
+	//printf("after:\n");
 	poly_print(&a);
 	////
 	poly_invntt(&a);
-	printf("recover:\n");
+	//printf("recover:\n");
 	poly_print(&a);
 
 }
@@ -369,7 +369,7 @@ void LRCT_ComHom_Test()
 	{
 		if (poly_equal(ck0 + i, sk + i) != 1)
 		{
-			printf("error\n");
+			//printf("error\n");
 			break;
 		}
 	}
@@ -410,13 +410,13 @@ void LRCT_ComHom_Test()
 		poly_shift(&tmp, comList + i, i);
 		poly_add(&a, &a, &tmp);
 	}
-	printf("a:\n");
+	//printf("a:\n");
 	poly_print(&a);
-	printf("r:\n");
+	//printf("r:\n");
 	poly_print(&r);
 	if (poly_equal(&a, &r) == 1)
 	{
-		printf("successfull\n");
+		//printf("successfull\n");
 	}
 	free(CKi);
 	free(comList);
