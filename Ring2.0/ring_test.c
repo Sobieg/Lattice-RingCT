@@ -9,9 +9,9 @@
 void LRCT_Byte_Test()
 {
 	poly a, ra;
-	uint8_t seed[NEWHOPE_SYMBYTES] = { 0 };
-	unsigned char bCof[NEWHOPE_POLYBYTES] = { 0 };
-	randombytes(seed, NEWHOPE_SYMBYTES);
+	uint8_t seed[RINGCT_SYMBYTES] = { 0 };
+	unsigned char bCof[RINGCT_POLYBYTES] = { 0 };
+	randombytes(seed, RINGCT_SYMBYTES);
 	poly_uniform(&a, seed);
 	//printf("begin:\n");
 	poly_print(&a);
@@ -38,7 +38,7 @@ void LRCT_Setup_Test()
 	poly* t[2];
 	unsigned char msg[2] = { 0x01, 0x02 };
 	int msgLen = 2;
-	unsigned char bt[NEWHOPE_POLYBYTES] = { 0 };
+	unsigned char bt[RINGCT_POLYBYTES] = { 0 };
 	size_t mLen = 2;
 	size_t i = 0;
 	size_t k = 0;
@@ -65,7 +65,7 @@ void LRCT_Setup_Test()
 
 	for (k = 0; k < 3; k++)
 	{
-		randombytes(bt, NEWHOPE_POLYBYTES);
+		randombytes(bt, RINGCT_POLYBYTES);
 		poly_frombytes(u + k, bt);
 		poly_serial(u + k);
 		///poly_print(u+k);
@@ -78,11 +78,11 @@ void LRCT_Setup_Test()
    result = LRCT_SigVer(&c1, t, A, H, mLen, &h, L,w, msg, msgLen);
    if (result ==1)
    {
-	   //printf("Successful!\n");
+	   printf("Successful!\n");
    }
    else
    {
-	   //printf("fail\n");
+	   printf("fail\n");
    }
    free(t[0]);
    free(t[1]);
@@ -225,9 +225,9 @@ void LRCT_Mul_Test()
 	LRCT_MatrixMulPoly(&h, H, S, 2);
 
 
-	for (size_t i = 0; i < NEWHOPE_N; i++)
+	for (size_t i = 0; i < RINGCT_N; i++)
 	{
-		h.coeffs[i] = coeff_freeze2Q(NEWHOPE_2Q + NEWHOPE_Q - h.coeffs[i] * 2);
+		h.coeffs[i] = coeff_freeze2Q(RINGCT_2Q + RINGCT_Q - h.coeffs[i] * 2);
 	}
 	LRCT_ConstMulMatrix(H2, H, 2, 2);
 	LRCT_MatrixMulPoly(&h1, H2, S, 2);
@@ -257,9 +257,9 @@ void LRCT_Lift_Test()
 	LRCT_Lift(LA, H, &h, 2);
 	////////////////////////////////////
 	LRCT_ConstMulMatrix(H2, H, 2, 2);
-	for (size_t i = 0; i < NEWHOPE_N; i++)
+	for (size_t i = 0; i < RINGCT_N; i++)
 	{
-		H2[2].coeffs[i] = coeff_freeze2Q(NEWHOPE_2Q + NEWHOPE_Q - h.coeffs[i] * 2);
+		H2[2].coeffs[i] = coeff_freeze2Q(RINGCT_2Q + RINGCT_Q - h.coeffs[i] * 2);
 	}
 	for (size_t i = 0; i < 3; i++)
 	{

@@ -2,7 +2,9 @@
 #define RINGCT_PARAMS_H
 
 #define RINGCT_Q 12289
+//#define RINGCT_Q 3677394373
 #define RINGCT_2Q 24578
+//#define RINGCT_2Q 7354788746
 #define RINGCT_K 8 /* used in noise sampling */
 #define RINGCT_N 512
 

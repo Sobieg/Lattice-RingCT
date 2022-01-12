@@ -10,7 +10,7 @@
  * coeffs[0] + X*coeffs[1] + X^2*xoeffs[2] + ... + X^{n-1}*coeffs[n-1] 
  */
 typedef struct {
-	uint16_t coeffs[NEWHOPE_N];
+	uint16_t coeffs[RINGCT_N];
 } poly
 
 #if !defined(_WIN32)

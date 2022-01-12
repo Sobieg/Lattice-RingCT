@@ -8,7 +8,7 @@
 void poly_init(poly *r)
 {
 	size_t i;
-	for ( i = 0; i < NEWHOPE_N; i++)
+	for ( i = 0; i < RINGCT_N; i++)
 	{
 		r->coeffs[i] = 0;
 	}
@@ -16,7 +16,7 @@ void poly_init(poly *r)
 void poly_setValue(poly *r, uint16_t v)
 {
 	size_t i;
-	for (i = 0; i < NEWHOPE_N; i++)
+	for (i = 0; i < RINGCT_N; i++)
 	{
 		r->coeffs[i] = v;
 	}
@@ -33,9 +33,9 @@ void poly_setValue(poly *r, uint16_t v)
  uint16_t coeff_freeze(uint16_t x) {
 	uint16_t m, r;
 	int16_t c;
-	r = x % NEWHOPE_Q;
+	r = x % RINGCT_Q;
 
-	m = r - NEWHOPE_Q;
+	m = r - RINGCT_Q;
 	c = m;
 	c >>= 15;
 	r = m ^ ((r ^ m) & c);
@@ -46,9 +46,9 @@ void poly_setValue(poly *r, uint16_t v)
  {
 	 uint16_t m, r;
 	 int16_t c;
-	 r = x % NEWHOPE_2Q;
+	 r = x % RINGCT_2Q;
 
-	 m = r - NEWHOPE_2Q;
+	 m = r - RINGCT_2Q;
 	 c = m;
 	 c >>= 15;
 	 r = m ^ ((r ^ m) & c);
@@ -69,7 +69,7 @@ static uint16_t flipabs(uint16_t x) {
 	int16_t r, m;
 	r = coeff_freeze(x);
 
-	r = r - NEWHOPE_Q / 2;
+	r = r - RINGCT_Q / 2;
 	m = r >> 15;
 	return (r + m) ^ m;
 }
@@ -84,7 +84,7 @@ static uint16_t flipabs(uint16_t x) {
 **************************************************/
 void poly_frombytes(poly *r, const unsigned char *a) {
 	int i;
-	for (i = 0; i < NEWHOPE_N / 4; i++) {
+	for (i = 0; i < RINGCT_N / 4; i++) {
 		r->coeffs[4 * i + 0] = a[7 * i + 0] | (((uint16_t) a[7 * i + 1] & 0x3f) << 8);
 		r->coeffs[4 * i + 1] = (a[7 * i + 1] >> 6) | (((uint16_t) a[7 * i + 2]) << 2) | (((uint16_t) a[7 * i + 3] & 0x0f) << 10);
 		r->coeffs[4 * i + 2] = (a[7 * i + 3] >> 4) | (((uint16_t) a[7 * i + 4]) << 4) | (((uint16_t) a[7 * i + 5] & 0x03) << 12);
@@ -103,7 +103,7 @@ void poly_frombytes(poly *r, const unsigned char *a) {
 void poly_tobytes(unsigned char *r, const poly *p) {
 	int i;
 	uint16_t t0, t1, t2, t3;
-	for (i = 0; i < NEWHOPE_N / 4; i++) {
+	for (i = 0; i < RINGCT_N / 4; i++) {
 		t0 = coeff_freeze(p->coeffs[4 * i + 0]);
 		t1 = coeff_freeze(p->coeffs[4 * i + 1]);
 		t2 = coeff_freeze(p->coeffs[4 * i + 2]);
@@ -132,10 +132,10 @@ void poly_compress(unsigned char *r, const poly *p) {
 
 	uint32_t t[8];
 
-	for (i = 0; i < NEWHOPE_N; i += 8) {
+	for (i = 0; i < RINGCT_N; i += 8) {
 		for (j = 0; j < 8; j++) {
 			t[j] = coeff_freeze(p->coeffs[i + j]);
-			t[j] = (((t[j] << 3) + NEWHOPE_Q / 2) / NEWHOPE_Q) & 0x7;
+			t[j] = (((t[j] << 3) + RINGCT_Q / 2) / RINGCT_Q) & 0x7;
 		}
 
 		r[k] = t[0] | (t[1] << 3) | (t[2] << 6);
@@ -156,7 +156,7 @@ void poly_compress(unsigned char *r, const poly *p) {
 **************************************************/
 void poly_decompress(poly *r, const unsigned char *a) {
 	unsigned int i, j;
-	for (i = 0; i < NEWHOPE_N; i += 8) {
+	for (i = 0; i < RINGCT_N; i += 8) {
 		r->coeffs[i + 0] = a[0] & 7;
 		r->coeffs[i + 1] = (a[0] >> 3) & 7;
 		r->coeffs[i + 2] = (a[0] >> 6) | ((a[1] << 2) & 4);
@@ -167,7 +167,7 @@ void poly_decompress(poly *r, const unsigned char *a) {
 		r->coeffs[i + 7] = (a[2] >> 5);
 		a += 3;
 		for (j = 0; j < 8; j++)
-			r->coeffs[i + j] = ((uint32_t) r->coeffs[i + j] * NEWHOPE_Q + 4) >> 3;
+			r->coeffs[i + j] = ((uint32_t) r->coeffs[i + j] * RINGCT_Q + 4) >> 3;
 	}
 }
 
@@ -185,11 +185,11 @@ void poly_frommsg(poly *r, const unsigned char *msg) {
 	{
 		for (j = 0; j < 8; j++) {
 			mask = -((msg[i] >> j) & 1);
-			r->coeffs[8 * i + j + 0] = mask & (NEWHOPE_Q / 2);
-			r->coeffs[8 * i + j + 256] = mask & (NEWHOPE_Q / 2);
-#if (NEWHOPE_N == 1024)
-			r->coeffs[8 * i + j + 512] = mask & (NEWHOPE_Q / 2);
-			r->coeffs[8 * i + j + 768] = mask & (NEWHOPE_Q / 2);
+			r->coeffs[8 * i + j + 0] = mask & (RINGCT_Q / 2);
+			r->coeffs[8 * i + j + 256] = mask & (RINGCT_Q / 2);
+#if (RINGCT_N == 1024)
+			r->coeffs[8 * i + j + 512] = mask & (RINGCT_Q / 2);
+			r->coeffs[8 * i + j + 768] = mask & (RINGCT_Q / 2);
 #endif
 		}
 	}
@@ -213,12 +213,12 @@ void poly_tomsg(unsigned char *msg, const poly *x) {
 	for (i = 0; i < 256; i++) {
 		t = flipabs(x->coeffs[i + 0]);
 		t += flipabs(x->coeffs[i + 256]);
-#if (NEWHOPE_N == 1024)
+#if (RINGCT_N == 1024)
 		t += flipabs(x->coeffs[i + 512]);
 		t += flipabs(x->coeffs[i + 768]);
-		t = ((t - NEWHOPE_Q));
+		t = ((t - RINGCT_Q));
 #else
-		t = ((t - NEWHOPE_Q / 2));
+		t = ((t - RINGCT_Q / 2));
 #endif
 
 		t >>= 15;
@@ -238,12 +238,12 @@ void poly_tomsg(unsigned char *msg, const poly *x) {
 void poly_uniform(poly *a, const unsigned char *seed) {
 	unsigned int ctr = 0;
 	uint16_t val;
-	uint64_t state[OQS_SHA3_STATESIZE];
-	uint8_t buf[OQS_SHA3_CSHAKE128_RATE];
-	uint8_t extseed[NEWHOPE_SYMBYTES + 1];
-	int i, j, k;
+	uint64_t state[SHA3_STATESIZE];
+	uint8_t buf[SHA3_CSHAKE128_RATE];
+	uint8_t extseed[RINGCT_SYMBYTES + 1];
+	int i;
 
-	for (i = 0; i < NEWHOPE_SYMBYTES; i++)
+	for (i = 0; i < RINGCT_SYMBYTES; i++)
 		extseed[i] = seed[i];
 
 	for (i = 0; i < OQS_SHA3_STATESIZE; ++i)
@@ -296,27 +296,27 @@ static unsigned char hw(unsigned char a) {
 *              - unsigned char nonce:       one-byte input nonce
 **************************************************/
 void poly_sample(poly *r, const unsigned char *seed, unsigned char nonce) {
-#if NEWHOPE_K != 8
+#if RINGCT_K != 8
 #error "poly_sample in poly.c only supports k=8"
 #endif
 	unsigned char buf[128], a, b;
 	//  uint32_t t, d, a, b, c;
 	int i, j;
 
-	unsigned char extseed[NEWHOPE_SYMBYTES + 2];
+	unsigned char extseed[RINGCT_SYMBYTES + 2];
 
-	for (i = 0; i < NEWHOPE_SYMBYTES; i++)
+	for (i = 0; i < RINGCT_SYMBYTES; i++)
 		extseed[i] = seed[i];
-	extseed[NEWHOPE_SYMBYTES] = nonce;
+	extseed[RINGCT_SYMBYTES] = nonce;
 
-	for (i = 0; i < NEWHOPE_N / 64; i++) /* Generate noise in blocks of 64 coefficients */
+	for (i = 0; i < RINGCT_N / 64; i++) /* Generate noise in blocks of 64 coefficients */
 	{
-		extseed[NEWHOPE_SYMBYTES + 1] = i;
-		OQS_SHA3_shake256(buf, 128, extseed, NEWHOPE_SYMBYTES + 2);
+		extseed[RINGCT_SYMBYTES + 1] = i;
+		SHA3_shake256(buf, 128, extseed, RINGCT_SYMBYTES + 2);
 		for (j = 0; j < 64; j++) {
 			a = buf[2 * j];
 			b = buf[2 * j + 1];
-			r->coeffs[64 * i + j] = hw(a) + NEWHOPE_Q - hw(b);
+			r->coeffs[64 * i + j] = hw(a) + RINGCT_Q - hw(b);
 		}
 	}
 }
@@ -334,7 +334,7 @@ void poly_mul_pointwise(poly *r, const poly *a, const poly *b) {
 	int i;
 	uint16_t t;
 
-	for (i = 0; i < NEWHOPE_N; i++) {
+	for (i = 0; i < RINGCT_N; i++) {
 		t = montgomery_reduce(3186 * b->coeffs[i]);         /* t is now in Montgomery domain */
 		r->coeffs[i] = montgomery_reduce(a->coeffs[i] * t); /* r->coeffs[i] is back in normal domain */
 	}
@@ -352,8 +352,8 @@ void poly_mul_pointwise(poly *r, const poly *a, const poly *b) {
 **************************************************/
 void poly_add(poly *r, const poly *a, const poly *b) {
 	int i;
-	for (i = 0; i < NEWHOPE_N; i++)
-		r->coeffs[i] = (a->coeffs[i] + b->coeffs[i]) % NEWHOPE_Q;
+	for (i = 0; i < RINGCT_N; i++)
+		r->coeffs[i] = (a->coeffs[i] + b->coeffs[i]) % RINGCT_Q;
 }
 
 /*************************************************
@@ -367,8 +367,8 @@ void poly_add(poly *r, const poly *a, const poly *b) {
 **************************************************/
 void poly_sub(poly *r, const poly *a, const poly *b) {
 	int i;
-	for (i = 0; i < NEWHOPE_N; i++)
-		r->coeffs[i] = (a->coeffs[i] + 3 * NEWHOPE_Q - b->coeffs[i]) % NEWHOPE_Q;
+	for (i = 0; i < RINGCT_N; i++)
+		r->coeffs[i] = (a->coeffs[i] + 3 * RINGCT_Q - b->coeffs[i]) % RINGCT_Q;
 }
 
 /*************************************************
@@ -410,7 +410,7 @@ void poly_invntt(poly *r) {
 void poly_print(const poly *r)
 {
 	size_t i = 0;
-	for ( i = 0; i < NEWHOPE_N; i++)
+	for ( i = 0; i < RINGCT_N; i++)
 	{
 		printf("%04X", r->coeffs[i]);
 	}
@@ -420,7 +420,7 @@ void poly_print(const poly *r)
 void poly_serial(poly *r)
 {
 	size_t i;
-	for ( i = 0; i < NEWHOPE_N; i++)
+	for ( i = 0; i < RINGCT_N; i++)
 	{
 		r->coeffs[i] = coeff_freeze(r->coeffs[i]);
 	}
@@ -428,7 +428,7 @@ void poly_serial(poly *r)
 void poly_cofcopy(poly *des, poly *sour)
 {
 	size_t i;
-	for ( i = 0; i < NEWHOPE_N; i++)
+	for ( i = 0; i < RINGCT_N; i++)
 	{
 		des->coeffs[i] = sour->coeffs[i];
 	}
@@ -445,7 +445,7 @@ void poly_copy(poly *des, poly *sou, size_t mLen)
 int poly_equal(const poly *a, const poly *b)
 {
 	size_t i;
-	for ( i = 0; i < NEWHOPE_N; i++)
+	for ( i = 0; i < RINGCT_N; i++)
 	{
 		if (a->coeffs[i] != b->coeffs[i])
 		{
@@ -459,13 +459,13 @@ void poly_constmul(poly *r, const poly *a, uint16_t cof)
 {
 	size_t i;
 	uint32_t tmp = 0;
-	for (i = 0; i < NEWHOPE_N; i++)
+	for (i = 0; i < RINGCT_N; i++)
 	{
 		tmp = cof * a->coeffs[i];
-		r->coeffs[i] = tmp%NEWHOPE_2Q;
+		r->coeffs[i] = tmp%RINGCT_2Q;
 	}
 }
-//ÒÆÎ»
+//ï¿½ï¿½Î»
 void poly_shift(poly *des, const poly *r, int iNumber)
 {
 	poly tmp;
