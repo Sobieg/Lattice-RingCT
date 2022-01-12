@@ -4,11 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stddef.h>
 
 /******************************************************************************/
-typedef unsigned __int64	uint64;
-typedef unsigned long		uint32;
-typedef unsigned char		uint8;
+typedef uint64_t            uint64;
+typedef uint32_t 		uint32;
+typedef uint8_t 		uint8;
 
 //rotate left(circular left shift) operation
 #define ROTL(value, bits)	(((value) << (bits)) | ((value) >> (32-bits)))

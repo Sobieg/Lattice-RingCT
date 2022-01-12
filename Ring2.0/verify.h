@@ -1,7 +1,7 @@
-#ifndef VERIFY_H
-#define VERIFY_H
+#ifndef RINGCT_VERIFY_H
+#define RINGCT_VERIFY_H
 
-#include <stdio.h>
+#include <stddef.h>
 
 /* returns 0 for equal strings, 1 for non-equal strings */
 int verify(const unsigned char *a, const unsigned char *b, size_t len);

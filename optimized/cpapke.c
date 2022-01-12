@@ -18,8 +18,8 @@
 static void encode_pk(unsigned char *r, const poly *pk, const unsigned char *seed) {
 	int i;
 	poly_tobytes(r, pk);
-	for (i = 0; i < NEWHOPE_SYMBYTES; i++)
-		r[NEWHOPE_POLYBYTES + i] = seed[i];
+	for (i = 0; i < RINGCT_SYMBYTES; i++)
+		r[RINGCT_POLYBYTES + i] = seed[i];
 }
 
 /*************************************************
@@ -34,8 +34,8 @@ static void encode_pk(unsigned char *r, const poly *pk, const unsigned char *see
 static void decode_pk(poly *pk, unsigned char *seed, const unsigned char *r) {
 	int i;
 	poly_frombytes(pk, r);
-	for (i = 0; i < NEWHOPE_SYMBYTES; i++)
-		seed[i] = r[NEWHOPE_POLYBYTES + i];
+	for (i = 0; i < RINGCT_SYMBYTES; i++)
+		seed[i] = r[RINGCT_POLYBYTES + i];
 }
 
 /*************************************************
@@ -51,7 +51,7 @@ static void decode_pk(poly *pk, unsigned char *seed, const unsigned char *r) {
 **************************************************/
 static void encode_c(unsigned char *r, const poly *b, const poly *v) {
 	poly_tobytes(r, b);
-	poly_compress(r + NEWHOPE_POLYBYTES, v);
+	poly_compress(r + RINGCT_POLYBYTES, v);
 }
 
 /*************************************************
@@ -65,7 +65,7 @@ static void encode_c(unsigned char *r, const poly *b, const poly *v) {
 **************************************************/
 static void decode_c(poly *b, poly *v, const unsigned char *r) {
 	poly_frombytes(b, r);
-	poly_decompress(v, r + NEWHOPE_POLYBYTES);
+	poly_decompress(v, r + RINGCT_POLYBYTES);
 }
 
 /*************************************************
@@ -93,12 +93,12 @@ static void gen_a(poly *a, const unsigned char *seed) {
 void cpapke_keypair(unsigned char *pk,
                     unsigned char *sk) {
 	poly ahat, ehat, ahat_shat, bhat, shat;
-	unsigned char z[2 * NEWHOPE_SYMBYTES];
+	unsigned char z[2 * RINGCT_SYMBYTES];
 	unsigned char *publicseed = z;
-	unsigned char *noiseseed = z + NEWHOPE_SYMBYTES;
+	unsigned char *noiseseed = z + RINGCT_SYMBYTES;
 
-	OQS_randombytes(z, NEWHOPE_SYMBYTES);
-	OQS_SHA3_shake256(z, 2 * NEWHOPE_SYMBYTES, z, NEWHOPE_SYMBYTES);
+	randombytes(z, RINGCT_SYMBYTES);
+	SHA3_shake256(z, 2 * RINGCT_SYMBYTES, z, RINGCT_SYMBYTES);
 
 	gen_a(&ahat, publicseed);
 
@@ -123,7 +123,7 @@ void cpapke_keypair(unsigned char *pk,
 *              the NewHope KEMs
 *
 * Arguments:   - unsigned char *c:          pointer to output ciphertext
-*              - const unsigned char *m:    pointer to input message (of length NEWHOPE_SYMBYTES bytes)
+*              - const unsigned char *m:    pointer to input message (of length RINGCT_SYMBYTES bytes)
 *              - const unsigned char *pk:   pointer to input public key
 *              - const unsigned char *coin: pointer to input random coins used as seed
 *                                           to deterministically generate all randomness
@@ -133,7 +133,7 @@ void cpapke_enc(unsigned char *c,
                 const unsigned char *pk,
                 const unsigned char *coin) {
 	poly sprime, eprime, vprime, ahat, bhat, eprimeprime, uhat, v;
-	unsigned char publicseed[NEWHOPE_SYMBYTES];
+	unsigned char publicseed[RINGCT_SYMBYTES];
 
 	poly_frommsg(&v, m);
 

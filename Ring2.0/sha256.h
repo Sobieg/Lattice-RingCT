@@ -1,5 +1,5 @@
-#ifndef _DIGEST_H
-#define _DIGEST_H
+#ifndef RINGCT_DIGEST_H
+#define RINGCT_DIGEST_H
 
 #include "cryptoConfig.h"
 

@@ -7,12 +7,12 @@
 
 void LRCT_SampleKey(poly *r, size_t mLen)
 {
-	uint8_t seed[NEWHOPE_SYMBYTES] = { 0 };
+	uint8_t seed[RINGCT_SYMBYTES] = { 0 };
 	size_t i;
 	for ( i = 0; i < mLen; i++)
 	{
-		OQS_randombytes(seed, NEWHOPE_SYMBYTES);
-		for (size_t j = 0; j < NEWHOPE_SYMBYTES; j++)
+		randombytes(seed, RINGCT_SYMBYTES);
+		for (size_t j = 0; j < RINGCT_SYMBYTES; j++)
 		{
 
 			r[i].coeffs[j * 8 + 0] = (seed[j] & 0x01);
@@ -24,18 +24,18 @@ void LRCT_SampleKey(poly *r, size_t mLen)
 			r[i].coeffs[j * 8 + 6] = (seed[j] & 0x40)>>6;
 			r[i].coeffs[j * 8 + 7] = (seed[j] & 0x80)>>7;
 		}
-		OQS_randombytes(seed, NEWHOPE_SYMBYTES);
-		for (size_t j = 0; j < NEWHOPE_SYMBYTES; j++)
+		randombytes(seed, RINGCT_SYMBYTES);
+		for (size_t j = 0; j < RINGCT_SYMBYTES; j++)
 		{
 
-			r[i].coeffs[NEWHOPE_SYMBYTES * 8 + j * 8 + 0] = (seed[j] & 0x01);
-			r[i].coeffs[NEWHOPE_SYMBYTES * 8 + j * 8 + 1] = (seed[j] & 0x02)>>1;
-			r[i].coeffs[NEWHOPE_SYMBYTES * 8 + j * 8 + 2] = (seed[j] & 0x04)>>2;
-			r[i].coeffs[NEWHOPE_SYMBYTES * 8 + j * 8 + 3] = (seed[j] & 0x08)>>3;
-			r[i].coeffs[NEWHOPE_SYMBYTES * 8 + j * 8 + 4] = (seed[j] & 0x10)>>4;
-			r[i].coeffs[NEWHOPE_SYMBYTES * 8 + j * 8 + 5] = (seed[j] & 0x20)>>5;
-			r[i].coeffs[NEWHOPE_SYMBYTES * 8 + j * 8 + 6] = (seed[j] & 0x40)>>6;
-			r[i].coeffs[NEWHOPE_SYMBYTES * 8 + j * 8 + 7] = (seed[j] & 0x80)>>7;
+			r[i].coeffs[RINGCT_SYMBYTES * 8 + j * 8 + 0] = (seed[j] & 0x01);
+			r[i].coeffs[RINGCT_SYMBYTES * 8 + j * 8 + 1] = (seed[j] & 0x02)>>1;
+			r[i].coeffs[RINGCT_SYMBYTES * 8 + j * 8 + 2] = (seed[j] & 0x04)>>2;
+			r[i].coeffs[RINGCT_SYMBYTES * 8 + j * 8 + 3] = (seed[j] & 0x08)>>3;
+			r[i].coeffs[RINGCT_SYMBYTES * 8 + j * 8 + 4] = (seed[j] & 0x10)>>4;
+			r[i].coeffs[RINGCT_SYMBYTES * 8 + j * 8 + 5] = (seed[j] & 0x20)>>5;
+			r[i].coeffs[RINGCT_SYMBYTES * 8 + j * 8 + 6] = (seed[j] & 0x40)>>6;
+			r[i].coeffs[RINGCT_SYMBYTES * 8 + j * 8 + 7] = (seed[j] & 0x80)>>7;
 		}
 		 
 	}
@@ -44,15 +44,15 @@ void LRCT_SampleKey(poly *r, size_t mLen)
 void LRCT_Setup(poly *A, poly *H, size_t mLen)
 {
 
-	uint8_t seed[NEWHOPE_SYMBYTES] = { 0 };
+	uint8_t seed[RINGCT_SYMBYTES] = { 0 };
 	size_t i = 0;
 
 	for ( i = 0; i < mLen; i++)
 	{
-		OQS_randombytes(seed, NEWHOPE_SYMBYTES);
+		randombytes(seed, RINGCT_SYMBYTES); // why do we use seed?
 		poly_uniform(A + i, seed);
 		poly_serial(A + i);
-		OQS_randombytes(seed, NEWHOPE_SYMBYTES);
+		randombytes(seed, RINGCT_SYMBYTES);
 		poly_uniform(H + i, seed);
 		poly_serial(H + i);
 	}
@@ -76,8 +76,8 @@ void LRCT_SigGen(poly *c1, poly **t, poly *h, poly *A, poly *H, poly *S, poly *u
 	poly c,  cpai;
 	SHA256_CTX ctx;
 	unsigned char bHash[32] = { 0 };
-	unsigned char bpoly[NEWHOPE_POLYBYTES] = { 0 };
-	unsigned char bt[NEWHOPE_POLYBYTES] = { 0 };
+	unsigned char bpoly[RINGCT_POLYBYTES] = { 0 };
+	unsigned char bt[RINGCT_POLYBYTES] = { 0 };
 	uint8_t coin = 0;
 	for ( i = 0; i < (mLen+1); i++)
 	{
@@ -97,24 +97,24 @@ void LRCT_SigGen(poly *c1, poly **t, poly *h, poly *A, poly *H, poly *S, poly *u
 	for (i = 0; i < w; i++)
 	{
 		poly_tobytes(bpoly, L + i);
-		SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);
+		SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);
 	}
 	for ( i = 0; i < mLen+1; i++)
 	{
 		poly_tobytes(bpoly, H2q + i);
-		SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);
+		SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);
 	}
 	SHA256_Update(&ctx, msg, msgLen);//msg
 
 	LRCT_MatrixMulPoly(&tmp, A2qp, u, mLen + 1);
 	poly_tobytes(bpoly, &tmp);
-	SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);//A2qb*U
+	SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);//A2qb*U
 
 	LRCT_MatrixMulPoly(&tmp, H2q, u, mLen + 1);
 	poly_tobytes(bpoly, &tmp);
-	SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);//H2q*U
+	SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);//H2q*U
 	SHA256_Final(bHash, &ctx);//C_(pai+1)
-	SHA256_KDF(bHash, 32, NEWHOPE_POLYBYTES, bt);
+	SHA256_KDF(bHash, 32, RINGCT_POLYBYTES, bt);
 	poly_frombytes(&c, bt);
 	poly_serial(&c);
 	poly_print(&c);
@@ -131,33 +131,33 @@ void LRCT_SigGen(poly *c1, poly **t, poly *h, poly *A, poly *H, poly *S, poly *u
 		for (k = 0; k < w; k++)
 		{
 			poly_tobytes(bpoly, L + k);
-			SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);
+			SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);
 		}
 		for (k = 0; k < mLen+1; k++)
 		{
 			poly_tobytes(bpoly, H2q + k);
-			SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);
+			SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);
 		}
 		SHA256_Update(&ctx, msg, msgLen);//msg
 		
 		for ( k = 0; k < mLen+1; k++)
 		{
-			OQS_randombytes(bt, NEWHOPE_POLYBYTES);
+			randombytes(bt, RINGCT_POLYBYTES);
 			poly_frombytes(t[j] + k, bt);
 			poly_serial(t[j] + k);
 		}
 		LRCT_MatrixMulPoly(&tmp, tmp2q, t[j], mLen + 1);
-		poly_constmul(&tmp1, &c, NEWHOPE_Q);
+		poly_constmul(&tmp1, &c, RINGCT_Q);
 		poly_add(&tmp, &tmp, &tmp1);//(+ qC_i)% Q
 		poly_tobytes(bpoly, &tmp);
-		SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);//
+		SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);//
 
 		LRCT_MatrixMulPoly(&tmp, H2q, t[j], mLen + 1);
 		poly_add(&tmp, &tmp, &tmp1);//(+ qC_i)% Q
 		poly_tobytes(bpoly, &tmp);
-		SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);//H2q*U
+		SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);//H2q*U
 		SHA256_Final(bHash, &ctx);//C_(pai+1)
-		SHA256_KDF(bHash, 32, NEWHOPE_POLYBYTES, bt);
+		SHA256_KDF(bHash, 32, RINGCT_POLYBYTES, bt);
 		poly_frombytes(&c, bt);
 		poly_serial(&c);//C_{j+1}
 		if (j == (pai-1))
@@ -167,7 +167,7 @@ void LRCT_SigGen(poly *c1, poly **t, poly *h, poly *A, poly *H, poly *S, poly *u
 		}
 
 	}
-	OQS_randombytes(&coin, 1);
+	randombytes(&coin, 1);
 	LRCT_PolyMultMatrix(tmp2q, &cpai, S2q, mLen + 1);//S2qpai *c_pai
 	if (coin&0x01)//b =1
 	{
@@ -191,7 +191,7 @@ int LRCT_SigVer(const poly *c1, poly **t, poly *A, poly *H, size_t mLen, poly *h
 	poly c, tmp, tmp1;
 	SHA256_CTX ctx;
 	unsigned char bHash[32] = { 0 };
-	unsigned char bpoly[NEWHOPE_POLYBYTES] = { 0 };
+	unsigned char bpoly[RINGCT_POLYBYTES] = { 0 };
 	for (i = 0; i < (mLen + 1); i++)
 	{
 		poly_init(H2q + i);
@@ -207,31 +207,31 @@ int LRCT_SigVer(const poly *c1, poly **t, poly *A, poly *H, size_t mLen, poly *h
 		for (k = 0; k < w; k++)
 		{
 			poly_tobytes(bpoly, L + k);
-			SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);
+			SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);
 		}
 		for (k = 0; k < mLen+1; k++)
 		{
 			poly_tobytes(bpoly, H2q + k);
-			SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);
+			SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);
 		}
 		SHA256_Update(&ctx, msg, msgLen);//msg
 
-		poly_constmul(&tmp1, &c, NEWHOPE_Q);
+		poly_constmul(&tmp1, &c, RINGCT_Q);
 
 		LRCT_MatrixMulPoly(&tmp, A2qp, t[i], mLen + 1);
 		poly_add(&tmp, &tmp, &tmp1);//(+ qC_i)% Q
 		poly_tobytes(bpoly, &tmp);
-		SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);//A2qb*U
+		SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);//A2qb*U
 
 		LRCT_MatrixMulPoly(&tmp, H2q, t[i], mLen + 1);
 		poly_add(&tmp, &tmp, &tmp1);//(+ qC_i)% Q
 		poly_serial(&tmp);
 		poly_tobytes(bpoly, &tmp);
-		SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);//H2q*U
+		SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);//H2q*U
 		SHA256_Final(bHash, &ctx);//C_(pai+1)
 		printf("bHash======================%d:\n", i);
-		BytePrint(bHash, 32);
-		SHA256_KDF(bHash, 32, NEWHOPE_POLYBYTES, bpoly);
+        print_bytes(bHash, 32);
+		SHA256_KDF(bHash, 32, RINGCT_POLYBYTES, bpoly);
 		poly_frombytes(&c, bpoly);
 		poly_serial(&c);
 	}
@@ -247,7 +247,8 @@ int LRCT_SigVer(const poly *c1, poly **t, poly *A, poly *H, size_t mLen, poly *h
 void LRCT_Mint(IW *iw, poly *ck, poly *a, poly *A, size_t mLen, unsigned char* bMessage, size_t msglen)
 {
 	LRCT_SampleKey(ck, mLen);
-	LRCT_nttCom(&(iw->cn), A, ck, mLen, bMessage, msglen);
+//    LRCT_nttCom(&(iw->cn), A, ck, mLen, bMessage, msglen);
+    LRCT_Com(&(iw->cn), A, ck, mLen, bMessage, msglen);
 	poly_cofcopy(&(iw->a), a);
 }
 void LRCT_Spend(IW *iwOA, poly *ckOA, poly *c1, poly **t, poly *h, poly *L, unsigned char* bSignMess, size_t sigMsgLen, IW *iws, size_t iwsLen,
@@ -283,15 +284,15 @@ int LRCT_Verify(poly *c1, poly **t, poly *h, poly* A, poly *H, size_t mLen,
 /////multiple
 void MIMO_LRCT_Setup(poly *A, poly *H, size_t mLen)
 {
-	uint8_t seed[NEWHOPE_SYMBYTES] = { 0 };
+	uint8_t seed[RINGCT_SYMBYTES] = { 0 };
 	size_t i = 0;
 
 	for (i = 0; i < mLen; i++)
 	{
-		OQS_randombytes(seed, NEWHOPE_SYMBYTES);
+		randombytes(seed, RINGCT_SYMBYTES);
 		poly_uniform(A + i, seed);
 		poly_serial(A + i);
-		OQS_randombytes(seed, NEWHOPE_SYMBYTES);
+		randombytes(seed, RINGCT_SYMBYTES);
 		poly_uniform(H + i, seed);
 		poly_serial(H + i);
 	}
@@ -304,18 +305,19 @@ void MIMO_LRCT_KeyGen(poly *a, poly *A, poly *S, size_t mLen)
 void MIMO_LRCT_Mint(IW *iw, poly *ck, poly *a, poly *A, size_t mLen, unsigned char* bMessage, size_t msglen)
 {
 	LRCT_SampleKey(ck, mLen);
-	LRCT_nttCom(&(iw->cn), A, ck, mLen, bMessage, msglen);
+//    LRCT_nttCom(&(iw->cn), A, ck, mLen, bMessage, msglen);
+    LRCT_Com(&(iw->cn), A, ck, mLen, bMessage, msglen);
 	poly_cofcopy(&(iw->a), a);
 }
 void MIMO_LRCT_Hash(int *pTable, poly *cn, poly *a, poly *ia, int beta)
 {
 	SHA256_CTX ctx;
 	unsigned char bHash[32] = { 0 };
-	unsigned char bpoly[NEWHOPE_POLYBYTES] = { 0 };
+	unsigned char bpoly[RINGCT_POLYBYTES] = { 0 };
 	unsigned char bt[576] = { 0 };
 	int i;
-	int tmpTable[NEWHOPE_N] = { 0 };
-	for ( i = 0; i < NEWHOPE_N; i++)
+	int tmpTable[RINGCT_N] = { 0 };
+	for ( i = 0; i < RINGCT_N; i++)
 	{
 		tmpTable[i] = i;
 	}
@@ -324,11 +326,11 @@ void MIMO_LRCT_Hash(int *pTable, poly *cn, poly *a, poly *ia, int beta)
 	for (i = 0; i < beta; i++)
 	{
 		poly_tobytes(bpoly, cn + i);
-		SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);
+		SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);
 		poly_tobytes(bpoly, a + i);
-		SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);
+		SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);
 		poly_tobytes(bpoly, ia + i);
-		SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);
+		SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);
 	}///H_1(L||)
 	SHA256_Final(bHash, &ctx);//C_(pai)
 	SHA256_KDF(bHash, 32, 576, bt);
@@ -353,14 +355,14 @@ void MIMO_LRCT_SigGen(poly *c1, poly *tList, poly *hList, poly *SList, int NLen,
 	poly tmp, tmp1, ctmp;
 	poly c, cpai;
 	unsigned char bHash[32] = { 0 };
-	unsigned char bpoly[NEWHOPE_POLYBYTES] = { 0 };
-	unsigned char bt[NEWHOPE_POLYBYTES] = { 0 };
+	unsigned char bpoly[RINGCT_POLYBYTES] = { 0 };
+	unsigned char bt[RINGCT_POLYBYTES] = { 0 };
 	uint8_t coin = 0;
 	int i = 0;
 	int k = 0;
 	int j = 0;
 	int index = 0;
-	//³õÊ¼»¯¶¯Ì¬±äÁ¿
+	//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½
 	for (i = 0; i < (mLen + 1); i++)
 	{
 		poly_init(A2qp + i);
@@ -378,7 +380,7 @@ void MIMO_LRCT_SigGen(poly *c1, poly *tList, poly *hList, poly *SList, int NLen,
 	for ( i = 0; i < wLen*NLen; i++)
 	{
 		poly_tobytes(bpoly, LList + i);
-		SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);
+		SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);
 	}///H_1(L||)
 	///H(L||H2q..)
 	for (i = 0; i < NLen; i++)
@@ -388,7 +390,7 @@ void MIMO_LRCT_SigGen(poly *c1, poly *tList, poly *hList, poly *SList, int NLen,
 		for (k = 0; k < mLen + 1; k++)
 		{
 			poly_tobytes(bpoly, H2q + i * (mLen + 1) + k);
-			SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);
+			SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);
 		}
 	}
 	////H(L||...||mu)
@@ -398,7 +400,7 @@ void MIMO_LRCT_SigGen(poly *c1, poly *tList, poly *hList, poly *SList, int NLen,
 	{
 		for (k = 0; k < mLen + 1; k++)
 		{
-			OQS_randombytes(bt, NEWHOPE_POLYBYTES);
+			randombytes(bt, RINGCT_POLYBYTES);
 			poly_frombytes(u + i * (mLen + 1) + k, bt);
 			poly_serial(u + i * (mLen + 1) + k);
 		}
@@ -411,12 +413,12 @@ void MIMO_LRCT_SigGen(poly *c1, poly *tList, poly *hList, poly *SList, int NLen,
 
 		LRCT_MatrixMulPoly(&tmp1, H2q + i * (mLen + 1), u+ i * (mLen + 1), mLen + 1);
 		poly_tobytes(bpoly, &tmp);
-		SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);
+		SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);
 		poly_tobytes(bpoly, &tmp1);
-		SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);
+		SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);
 	}
 	SHA256_Final(bHash, &ctx);//C_(pai)
-	SHA256_KDF(bHash, 32, NEWHOPE_POLYBYTES, bt);
+	SHA256_KDF(bHash, 32, RINGCT_POLYBYTES, bt);
 	poly_frombytes(&c, bt);
 	poly_serial(&c);
 	//////////////////////
@@ -434,25 +436,25 @@ void MIMO_LRCT_SigGen(poly *c1, poly *tList, poly *hList, poly *SList, int NLen,
 		for (j = 0; j < wLen*NLen; j++)
 		{
 			poly_tobytes(bpoly, LList + j);
-			SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);
+			SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);
 		}
 		for (j = 0; j < NLen; j++)
 		{
 			for (k = 0; k < mLen + 1; k++)
 			{
 				poly_tobytes(bpoly, H2q + j * (mLen + 1) + k);
-				SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);
+				SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);
 			}
 		}//H_1(L||H2q)
 		SHA256_Update(&ctx, msg, msgLen);//H(L||...||mu)
 
-		poly_constmul(&tmp1, &ctmp, NEWHOPE_Q);//qC_i
+		poly_constmul(&tmp1, &ctmp, RINGCT_Q);//qC_i
 		for (j = 0; j < NLen; j++)
 		{
 		   LRCT_Lift(tmp2q, A, LList + j * wLen + index, mLen);
 			for (k = 0; k < mLen + 1; k++)
 			{
-				OQS_randombytes(bt, NEWHOPE_POLYBYTES);
+				randombytes(bt, RINGCT_POLYBYTES);
 				poly_frombytes(tList + j * wLen*(mLen + 1) + index * (mLen + 1) + k, bt);
 				poly_serial(tList + j * wLen*(mLen + 1) + index * (mLen+1)+ k);
 			}
@@ -460,15 +462,15 @@ void MIMO_LRCT_SigGen(poly *c1, poly *tList, poly *hList, poly *SList, int NLen,
 		
 			poly_add(&tmp, &tmp, &tmp1);//(+ qC_i)% Q
 			poly_tobytes(bpoly, &tmp);
-			SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);//
+			SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);//
 			////////
 			LRCT_MatrixMulPoly(&tmp, H2q + j * (mLen + 1), tList + j * wLen*(mLen + 1) + index * (mLen + 1), mLen + 1);
 			poly_add(&tmp, &tmp, &tmp1);//(+ qC_i)% Q
 			poly_tobytes(bpoly, &tmp);
-			SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);//H2q*U
+			SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);//H2q*U
 		}
 		SHA256_Final(bHash, &ctx);//
-		SHA256_KDF(bHash, 32, NEWHOPE_POLYBYTES, bt);
+		SHA256_KDF(bHash, 32, RINGCT_POLYBYTES, bt);
 		poly_frombytes(&ctmp, bt);
 		poly_serial(&ctmp);//C_{index+1}
 		if (index == (pai - 2))
@@ -482,7 +484,7 @@ void MIMO_LRCT_SigGen(poly *c1, poly *tList, poly *hList, poly *SList, int NLen,
 		poly_copy(S2q, SList+i*mLen, mLen);
 		poly_setValue(S2q + mLen, 1);//S_{2q}
 		//////
-		OQS_randombytes(&coin, 1);
+		randombytes(&coin, 1);
 		LRCT_PolyMultMatrix(tmp2q, &cpai, S2q, mLen + 1);//S2qpai *c_pai
 		if (coin & 0x01)//b =1
 		{
@@ -493,7 +495,7 @@ void MIMO_LRCT_SigGen(poly *c1, poly *tList, poly *hList, poly *SList, int NLen,
 		}
 	}
 	/////
-	//³õÊ¼»¯¶¯Ì¬±äÁ¿
+	//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½
 		free(A2qp);
 		free(S2q);
 		free(tmp2q);
@@ -511,7 +513,7 @@ int MIMO_LRCT_SigVer(poly *c1, poly *tList, poly *hList, int NLen, poly *A, poly
 	poly ctmp,tmp, tmp1;
 	SHA256_CTX ctx;
 	unsigned char bHash[32] = { 0 };
-	unsigned char bpoly[NEWHOPE_POLYBYTES] = { 0 };
+	unsigned char bpoly[RINGCT_POLYBYTES] = { 0 };
 	/////////
 	poly_cofcopy(&ctmp, c1);
 	for (i = 0; i < NLen; i++)
@@ -525,34 +527,34 @@ int MIMO_LRCT_SigVer(poly *c1, poly *tList, poly *hList, int NLen, poly *A, poly
 		for (k = 0; k < wLen*NLen; k++)
 		{
 			poly_tobytes(bpoly, LList + k);
-			SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);
+			SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);
 		}///H_1(L||)
 		for (j = 0; j< NLen; j++)
 		{
 			for (k = 0; k < (mLen + 1); k++)
 			{
 				poly_tobytes(bpoly, H2q + j * (mLen + 1) + k);
-				SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);
+				SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);
 			}
 		}
 		SHA256_Update(&ctx, msg, msgLen);//H(L||...||mu)
 
-		poly_constmul(&tmp1, &ctmp, NEWHOPE_Q);//qC_i
+		poly_constmul(&tmp1, &ctmp, RINGCT_Q);//qC_i
 		for ( j = 0; j < NLen; j++)
 		{
 			LRCT_Lift(A2qp, A, LList + j * wLen + i , mLen);
 			LRCT_MatrixMulPoly(&tmp, A2qp, tList + j * wLen*(mLen + 1) + i * (mLen + 1), mLen + 1);
 			poly_add(&tmp, &tmp, &tmp1);//(+ qC_i)% Q
 			poly_tobytes(bpoly, &tmp);
-			SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);
+			SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);
 			
 			LRCT_MatrixMulPoly(&tmp, H2q + j * (mLen + 1), tList + j * wLen*(mLen + 1) + i* (mLen + 1), mLen + 1);
 			poly_add(&tmp, &tmp, &tmp1);//(+ qC_i)% Q
 			poly_tobytes(bpoly, &tmp);
-			SHA256_Update(&ctx, bpoly, NEWHOPE_POLYBYTES);//H2q*U
+			SHA256_Update(&ctx, bpoly, RINGCT_POLYBYTES);//H2q*U
 		}
 		SHA256_Final(bHash, &ctx);//
-		SHA256_KDF(bHash, 32, NEWHOPE_POLYBYTES, bpoly);
+		SHA256_KDF(bHash, 32, RINGCT_POLYBYTES, bpoly);
 		poly_frombytes(&ctmp, bpoly);
 		poly_serial(&ctmp);//
 	}
@@ -574,14 +576,14 @@ void LRCT_Lift(poly *LA, poly *A, poly *a, size_t mLen)
 	int16_t tmp = 0;
 	for ( i = 0; i < mLen; i++)
 	{
-		for ( j = 0; j < NEWHOPE_N; j++)
+		for ( j = 0; j < RINGCT_N; j++)
 		{
 			LA[i].coeffs[j] = 2 * A[i].coeffs[j];
 		}	
 	}
-	for ( j = 0; j < NEWHOPE_N; j++)
+	for ( j = 0; j < RINGCT_N; j++)
 	{
-		LA[mLen].coeffs[j] = coeff_freeze2Q(NEWHOPE_2Q+ NEWHOPE_Q - a->coeffs[j] * 2);
+		LA[mLen].coeffs[j] = coeff_freeze2Q(RINGCT_2Q+ RINGCT_Q - a->coeffs[j] * 2);
 	}
 }
 
@@ -595,17 +597,15 @@ void LRCT_Com(poly *r, poly *A, poly *sk, size_t mLen, unsigned char *bMessage, 
 	for (j = 0; j < msglen; j++)
 	{
 
-		r->coeffs[j * 8 + 0] = (tmp.coeffs[j * 8 + 0] + (bMessage[j]&0x01))%NEWHOPE_Q;
-		r->coeffs[j * 8 + 1] = (tmp.coeffs[j * 8 + 1] + ((bMessage[j] & 0x02) >> 1)) % NEWHOPE_Q;
-		r->coeffs[j * 8 + 2] = (tmp.coeffs[j * 8 + 2] + ((bMessage[j] & 0x04) >> 2)) % NEWHOPE_Q;
-		r->coeffs[j * 8 + 3] = (tmp.coeffs[j * 8 + 3] + ((bMessage[j] & 0x08) >> 3)) % NEWHOPE_Q;
-		r->coeffs[j * 8 + 4] = (tmp.coeffs[j * 8 + 4] + ((bMessage[j] & 0x10) >> 4)) % NEWHOPE_Q;
-		r->coeffs[j * 8 + 5] = (tmp.coeffs[j * 8 + 5] + ((bMessage[j] & 0x20) >> 5)) % NEWHOPE_Q;
-		r->coeffs[j * 8 + 6] = (tmp.coeffs[j * 8 + 6] + ((bMessage[j] & 0x40) >> 6)) % NEWHOPE_Q;
-		r->coeffs[j * 8 + 7] = (tmp.coeffs[j * 8 + 7] + ((bMessage[j] & 0x80) >> 7)) % NEWHOPE_Q;
+		r->coeffs[j * 8 + 0] = (tmp.coeffs[j * 8 + 0] + (bMessage[j]&0x01))%RINGCT_Q;
+		r->coeffs[j * 8 + 1] = (tmp.coeffs[j * 8 + 1] + ((bMessage[j] & 0x02) >> 1)) % RINGCT_Q;
+		r->coeffs[j * 8 + 2] = (tmp.coeffs[j * 8 + 2] + ((bMessage[j] & 0x04) >> 2)) % RINGCT_Q;
+		r->coeffs[j * 8 + 3] = (tmp.coeffs[j * 8 + 3] + ((bMessage[j] & 0x08) >> 3)) % RINGCT_Q;
+		r->coeffs[j * 8 + 4] = (tmp.coeffs[j * 8 + 4] + ((bMessage[j] & 0x10) >> 4)) % RINGCT_Q;
+		r->coeffs[j * 8 + 5] = (tmp.coeffs[j * 8 + 5] + ((bMessage[j] & 0x20) >> 5)) % RINGCT_Q;
+		r->coeffs[j * 8 + 6] = (tmp.coeffs[j * 8 + 6] + ((bMessage[j] & 0x40) >> 6)) % RINGCT_Q;
+		r->coeffs[j * 8 + 7] = (tmp.coeffs[j * 8 + 7] + ((bMessage[j] & 0x80) >> 7)) % RINGCT_Q;
 	}
-
-}
 void LRCT_nttCom(poly *r, poly *A, poly *sk, size_t mLen, unsigned char *bMessage, size_t msglen)
 {
 	poly tmp, pMess;

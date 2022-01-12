@@ -1,5 +1,5 @@
-#ifndef FIPS202_H
-#define FIPS202_H
+#ifndef RINGCT_FIPS202_H
+#define RINGCT_FIPS202_H
 
 #include <stdint.h>
 

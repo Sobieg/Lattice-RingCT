@@ -53,7 +53,7 @@ static void store64(uint8_t *a, uint64_t x) {
 
 /* SHA3 */
 
-void OQS_SHA3_keccak_permute(uint64_t *state) {
+void SHA3_keccak_permute(uint64_t *state) {
 	uint64_t Aba = state[0];
 	uint64_t Abe = state[1];
 	uint64_t Abi = state[2];
@@ -2196,7 +2196,7 @@ void OQS_SHA3_keccak_permute(uint64_t *state) {
 	state[24] = Asu;
 }
 
-void OQS_SHA3_keccak_absorb(uint64_t *state, size_t rate, const uint8_t *input, size_t inplen, uint8_t domain) {
+void SHA3_keccak_absorb(uint64_t *state, size_t rate, const uint8_t *input, size_t inplen, uint8_t domain) {
 	uint8_t msg[200];
 	size_t i;
 
@@ -2205,7 +2205,7 @@ void OQS_SHA3_keccak_absorb(uint64_t *state, size_t rate, const uint8_t *input, 
 			state[i] ^= load64(input + (8 * i));
 		}
 
-		OQS_SHA3_keccak_permute(state);
+		SHA3_keccak_permute(state);
 
 		inplen -= rate;
 		input += rate;
@@ -2228,7 +2228,7 @@ void OQS_SHA3_keccak_absorb(uint64_t *state, size_t rate, const uint8_t *input, 
 	}
 }
 
-void OQS_SHA3_sha3256(uint8_t *output, const uint8_t *input, size_t inplen) {
+void SHA3_sha3256(uint8_t *output, const uint8_t *input, size_t inplen) {
 	uint64_t state[SHA3_STATESIZE];
 	uint8_t hash[SHA3_SHA3_256_RATE];
 	size_t i;
@@ -2237,15 +2237,15 @@ void OQS_SHA3_sha3256(uint8_t *output, const uint8_t *input, size_t inplen) {
 		state[i] = 0;
 	}
 
-	OQS_SHA3_keccak_absorb(state, SHA3_SHA3_256_RATE, input, inplen, SHA3_SHA3_DOMAIN);
-	OQS_SHA3_keccak_squeezeblocks(hash, 1, state, SHA3_SHA3_256_RATE);
+	SHA3_keccak_absorb(state, SHA3_SHA3_256_RATE, input, inplen, SHA3_SHA3_DOMAIN);
+	SHA3_keccak_squeezeblocks(hash, 1, state, SHA3_SHA3_256_RATE);
 
 	for (i = 0; i < 32; i++) {
 		output[i] = hash[i];
 	}
 }
 
-void OQS_SHA3_sha3512(uint8_t *output, const uint8_t *input, size_t inplen) {
+void SHA3_sha3512(uint8_t *output, const uint8_t *input, size_t inplen) {
 	uint64_t state[SHA3_STATESIZE];
 	uint8_t hash[SHA3_SHA3_512_RATE];
 	size_t i;
@@ -2254,19 +2254,19 @@ void OQS_SHA3_sha3512(uint8_t *output, const uint8_t *input, size_t inplen) {
 		state[i] = 0;
 	}
 
-	OQS_SHA3_keccak_absorb(state, SHA3_SHA3_512_RATE, input, inplen, SHA3_SHA3_DOMAIN);
-	OQS_SHA3_keccak_squeezeblocks(hash, 1, state, SHA3_SHA3_512_RATE);
+	SHA3_keccak_absorb(state, SHA3_SHA3_512_RATE, input, inplen, SHA3_SHA3_DOMAIN);
+	SHA3_keccak_squeezeblocks(hash, 1, state, SHA3_SHA3_512_RATE);
 
 	for (i = 0; i < 64; i++) {
 		output[i] = hash[i];
 	}
 }
 
-void OQS_SHA3_keccak_squeezeblocks(uint8_t *output, size_t nblocks, uint64_t *state, size_t rate) {
+void SHA3_keccak_squeezeblocks(uint8_t *output, size_t nblocks, uint64_t *state, size_t rate) {
 	size_t i;
 
 	while (nblocks > 0) {
-		OQS_SHA3_keccak_permute(state);
+		SHA3_keccak_permute(state);
 
 		for (i = 0; i < (rate >> 3); i++) {
 			store64(output + 8 * i, state[i]);
@@ -2279,7 +2279,7 @@ void OQS_SHA3_keccak_squeezeblocks(uint8_t *output, size_t nblocks, uint64_t *st
 
 /* SHAKE */
 
-void OQS_SHA3_shake128(uint8_t *output, size_t outlen, const uint8_t *input, size_t inplen) {
+void SHA3_shake128(uint8_t *output, size_t outlen, const uint8_t *input, size_t inplen) {
 	size_t nblocks = outlen / SHA3_SHAKE128_RATE;
 	uint64_t state[SHA3_STATESIZE];
 	uint8_t hash[SHA3_SHAKE128_RATE];
@@ -2289,14 +2289,14 @@ void OQS_SHA3_shake128(uint8_t *output, size_t outlen, const uint8_t *input, siz
 		state[i] = 0;
 	}
 
-	OQS_SHA3_keccak_absorb(state, SHA3_SHAKE128_RATE, input, inplen, SHA3_SHAKE_DOMAIN);
-	OQS_SHA3_keccak_squeezeblocks(output, nblocks, state, SHA3_SHAKE128_RATE);
+	SHA3_keccak_absorb(state, SHA3_SHAKE128_RATE, input, inplen, SHA3_SHAKE_DOMAIN);
+	SHA3_keccak_squeezeblocks(output, nblocks, state, SHA3_SHAKE128_RATE);
 
 	output += (nblocks * SHA3_SHAKE128_RATE);
 	outlen -= (nblocks * SHA3_SHAKE128_RATE);
 
 	if (outlen != 0) {
-		OQS_SHA3_keccak_squeezeblocks(hash, 1, state, SHA3_SHAKE128_RATE);
+		SHA3_keccak_squeezeblocks(hash, 1, state, SHA3_SHAKE128_RATE);
 
 		for (i = 0; i < outlen; i++) {
 			output[i] = hash[i];
@@ -2304,15 +2304,15 @@ void OQS_SHA3_shake128(uint8_t *output, size_t outlen, const uint8_t *input, siz
 	}
 }
 
-void OQS_SHA3_shake128_absorb(uint64_t *state, const uint8_t *input, size_t inplen) {
-	OQS_SHA3_keccak_absorb(state, SHA3_SHAKE128_RATE, input, inplen, SHA3_SHAKE_DOMAIN);
+void SHA3_shake128_absorb(uint64_t *state, const uint8_t *input, size_t inplen) {
+	SHA3_keccak_absorb(state, SHA3_SHAKE128_RATE, input, inplen, SHA3_SHAKE_DOMAIN);
 }
 
-void OQS_SHA3_shake128_squeezeblocks(uint8_t *output, size_t nblocks, uint64_t *state) {
-	OQS_SHA3_keccak_squeezeblocks(output, nblocks, state, SHA3_SHAKE128_RATE);
+void SHA3_shake128_squeezeblocks(uint8_t *output, size_t nblocks, uint64_t *state) {
+	SHA3_keccak_squeezeblocks(output, nblocks, state, SHA3_SHAKE128_RATE);
 }
 
-void OQS_SHA3_shake256(uint8_t *output, size_t outlen, const uint8_t *input, size_t inplen) {
+void SHA3_shake256(uint8_t *output, size_t outlen, const uint8_t *input, size_t inplen) {
 	size_t nblocks = outlen / SHA3_SHAKE256_RATE;
 	uint64_t state[SHA3_STATESIZE];
 	uint8_t hash[SHA3_SHAKE256_RATE];
@@ -2322,14 +2322,14 @@ void OQS_SHA3_shake256(uint8_t *output, size_t outlen, const uint8_t *input, siz
 		state[i] = 0;
 	}
 
-	OQS_SHA3_keccak_absorb(state, SHA3_SHAKE256_RATE, input, inplen, SHA3_SHAKE_DOMAIN);
-	OQS_SHA3_keccak_squeezeblocks(output, nblocks, state, SHA3_SHAKE256_RATE);
+	SHA3_keccak_absorb(state, SHA3_SHAKE256_RATE, input, inplen, SHA3_SHAKE_DOMAIN);
+	SHA3_keccak_squeezeblocks(output, nblocks, state, SHA3_SHAKE256_RATE);
 
 	output += (nblocks * SHA3_SHAKE256_RATE);
 	outlen -= (nblocks * SHA3_SHAKE256_RATE);
 
 	if (outlen != 0) {
-		OQS_SHA3_keccak_squeezeblocks(hash, 1, state, SHA3_SHAKE256_RATE);
+		SHA3_keccak_squeezeblocks(hash, 1, state, SHA3_SHAKE256_RATE);
 
 		for (i = 0; i < outlen; i++) {
 			output[i] = hash[i];
@@ -2337,17 +2337,17 @@ void OQS_SHA3_shake256(uint8_t *output, size_t outlen, const uint8_t *input, siz
 	}
 }
 
-void OQS_SHA3_shake256_absorb(uint64_t *state, const uint8_t *input, size_t inplen) {
-	OQS_SHA3_keccak_absorb(state, SHA3_SHAKE256_RATE, input, inplen, SHA3_SHAKE_DOMAIN);
+void SHA3_shake256_absorb(uint64_t *state, const uint8_t *input, size_t inplen) {
+	SHA3_keccak_absorb(state, SHA3_SHAKE256_RATE, input, inplen, SHA3_SHAKE_DOMAIN);
 }
 
-void OQS_SHA3_shake256_squeezeblocks(uint8_t *output, size_t nblocks, uint64_t *state) {
-	OQS_SHA3_keccak_squeezeblocks(output, nblocks, state, SHA3_SHAKE256_RATE);
+void SHA3_shake256_squeezeblocks(uint8_t *output, size_t nblocks, uint64_t *state) {
+	SHA3_keccak_squeezeblocks(output, nblocks, state, SHA3_SHAKE256_RATE);
 }
 
 /* cSHAKE */
 
-void OQS_SHA3_cshake128_simple(uint8_t *output, size_t outlen, uint16_t cstm, const uint8_t *input, size_t inplen) {
+void SHA3_cshake128_simple(uint8_t *output, size_t outlen, uint16_t cstm, const uint8_t *input, size_t inplen) {
 	size_t nblocks = outlen / SHA3_CSHAKE128_RATE;
 	uint64_t state[SHA3_STATESIZE];
 	uint8_t hash[SHA3_CSHAKE128_RATE];
@@ -2357,14 +2357,14 @@ void OQS_SHA3_cshake128_simple(uint8_t *output, size_t outlen, uint16_t cstm, co
 		state[i] = 0;
 	}
 
-	OQS_SHA3_cshake128_simple_absorb(state, cstm, input, inplen);
-	OQS_SHA3_keccak_squeezeblocks(output, nblocks, state, SHA3_CSHAKE128_RATE);
+	SHA3_cshake128_simple_absorb(state, cstm, input, inplen);
+	SHA3_keccak_squeezeblocks(output, nblocks, state, SHA3_CSHAKE128_RATE);
 
 	output += (nblocks * SHA3_CSHAKE128_RATE);
 	outlen -= (nblocks * SHA3_CSHAKE128_RATE);
 
 	if (outlen != 0) {
-		OQS_SHA3_keccak_squeezeblocks(hash, 1, state, SHA3_CSHAKE128_RATE);
+		SHA3_keccak_squeezeblocks(hash, 1, state, SHA3_CSHAKE128_RATE);
 
 		for (i = 0; i < outlen; i++) {
 			output[i] = hash[i];
@@ -2372,7 +2372,7 @@ void OQS_SHA3_cshake128_simple(uint8_t *output, size_t outlen, uint16_t cstm, co
 	}
 }
 
-void OQS_SHA3_cshake128_simple_absorb(uint64_t *state, uint16_t cstm, const uint8_t *input, size_t inplen) {
+void SHA3_cshake128_simple_absorb(uint64_t *state, uint16_t cstm, const uint8_t *input, size_t inplen) {
 	/* Note: This function doesn't align exactly to cSHAKE (SP800-185 3.2), which should produce
 	SHAKE output if S and N = zero (sort of a customized custom-SHAKE function).
 	Padding is hard-coded as the first 32 bits, plus 16 bits of fixed S,
@@ -2392,17 +2392,17 @@ void OQS_SHA3_cshake128_simple_absorb(uint64_t *state, uint16_t cstm, const uint
 	state[0] = load64(sep);
 
 	/* transform the domain string */
-	OQS_SHA3_keccak_permute(state);
+	SHA3_keccak_permute(state);
 
 	/* absorb the state */
-	OQS_SHA3_keccak_absorb(state, SHA3_CSHAKE128_RATE, input, inplen, SHA3_CSHAKE_DOMAIN);
+	SHA3_keccak_absorb(state, SHA3_CSHAKE128_RATE, input, inplen, SHA3_CSHAKE_DOMAIN);
 }
 
-void OQS_SHA3_cshake128_simple_squeezeblocks(uint8_t *output, size_t nblocks, uint64_t *state) {
-	OQS_SHA3_keccak_squeezeblocks(output, nblocks, state, SHA3_CSHAKE128_RATE);
+void SHA3_cshake128_simple_squeezeblocks(uint8_t *output, size_t nblocks, uint64_t *state) {
+	SHA3_keccak_squeezeblocks(output, nblocks, state, SHA3_CSHAKE128_RATE);
 }
 
-void OQS_SHA3_cshake256_simple(uint8_t *output, size_t outlen, uint16_t cstm, const uint8_t *input, size_t inplen) {
+void SHA3_cshake256_simple(uint8_t *output, size_t outlen, uint16_t cstm, const uint8_t *input, size_t inplen) {
 	size_t nblocks = outlen / SHA3_CSHAKE256_RATE;
 	uint64_t state[SHA3_STATESIZE];
 	uint8_t hash[SHA3_CSHAKE256_RATE];
@@ -2412,14 +2412,14 @@ void OQS_SHA3_cshake256_simple(uint8_t *output, size_t outlen, uint16_t cstm, co
 		state[i] = 0;
 	}
 
-	OQS_SHA3_cshake256_simple_absorb(state, cstm, input, inplen);
-	OQS_SHA3_keccak_squeezeblocks(output, nblocks, state, SHA3_CSHAKE256_RATE);
+	SHA3_cshake256_simple_absorb(state, cstm, input, inplen);
+	SHA3_keccak_squeezeblocks(output, nblocks, state, SHA3_CSHAKE256_RATE);
 
 	output += (nblocks * SHA3_CSHAKE256_RATE);
 	outlen -= (nblocks * SHA3_CSHAKE256_RATE);
 
 	if (outlen != 0) {
-		OQS_SHA3_keccak_squeezeblocks(hash, 1, state, SHA3_CSHAKE256_RATE);
+		SHA3_keccak_squeezeblocks(hash, 1, state, SHA3_CSHAKE256_RATE);
 
 		for (i = 0; i < outlen; i++) {
 			output[i] = hash[i];
@@ -2427,7 +2427,7 @@ void OQS_SHA3_cshake256_simple(uint8_t *output, size_t outlen, uint16_t cstm, co
 	}
 }
 
-void OQS_SHA3_cshake256_simple_absorb(uint64_t *state, uint16_t cstm, const uint8_t *input, size_t inplen) {
+void SHA3_cshake256_simple_absorb(uint64_t *state, uint16_t cstm, const uint8_t *input, size_t inplen) {
 	uint8_t sep[8];
 	sep[0] = 0x01; /* bytepad */
 	sep[1] = 0x88;
@@ -2441,12 +2441,12 @@ void OQS_SHA3_cshake256_simple_absorb(uint64_t *state, uint16_t cstm, const uint
 	state[0] = load64(sep);
 
 	/* transform the domain string */
-	OQS_SHA3_keccak_permute(state);
+	SHA3_keccak_permute(state);
 
 	/* absorb the state */
-	OQS_SHA3_keccak_absorb(state, SHA3_CSHAKE256_RATE, input, inplen, SHA3_CSHAKE_DOMAIN);
+	SHA3_keccak_absorb(state, SHA3_CSHAKE256_RATE, input, inplen, SHA3_CSHAKE_DOMAIN);
 }
 
-void OQS_SHA3_cshake256_simple_squeezeblocks(uint8_t *output, size_t nblocks, uint64_t *state) {
-	OQS_SHA3_keccak_squeezeblocks(output, nblocks, state, SHA3_CSHAKE256_RATE);
+void SHA3_cshake256_simple_squeezeblocks(uint8_t *output, size_t nblocks, uint64_t *state) {
+	SHA3_keccak_squeezeblocks(output, nblocks, state, SHA3_CSHAKE256_RATE);
 }
